@@ -1,30 +1,39 @@
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+import random
+import os
+import glob
+import sys
 
-# ベース画像の用意
-bgimage = '候補4.png'
-im = Image.open(bgimage)
+# 引数: 1行目のテキスト 2行目のテキスト
+# ランダムにベース画像を用意
+# 透明な背景を描画
+
+# コマンドライン引数を受け取る
+texts = []
+texts.append(sys.argv[1])
+texts.append(sys.argv[2])
+
+# ランダムにベース画像を用意
+image_dir = os.path.join(os.getcwd(), 'base_png_images')
+image_list = glob.glob(os.path.join(image_dir, '*.png'))
+base_image = random.choice(image_list)
+
+# pillowを使う
+im = Image.open(base_image)
+draw = ImageDraw.Draw(im)
+font = ImageFont.truetype('/Library/Fonts/LightNovelPOPv2.otf', size=80)
 
 # テキスト用枠の用意
 layer1 = Image.new('RGBA', im.size, color=0)
 layer1_d = ImageDraw.Draw(layer1)
-layer1_d.rectangle([(145, 40), (535, 350)], fill=(255, 255, 128,))
+margin = 150
+layer1_d.rectangle([(0, margin), (im.size[0], im.size[1]-margin)],
+                   fill=(255, 255, 255, 192))
 
 # ベース画像とテキスト枠の合成
 result = Image.alpha_composite(im, layer1)
 draw = ImageDraw.Draw(result)
-
-# テキストの用意
-text1 = 'Python'
-text2 = '文字列の操作'
-text3 = '大文字・小文字変換'
-texts = [text1, text2, text3]
-
-#　テキスト描画の初期位置を計算
-font = ImageFont.truetype('/Library/Fonts/LightNovelPOPv2.otf', size=40)
-# textsize = font.getsize(text1)
-# textsize = (textsize[0], textsize[1]*len(texts))
-# pos = (np.array(im.size) - np.array(textsize)) / 2
 
 for i, text in enumerate(texts):
     pos = []
@@ -32,17 +41,15 @@ for i, text in enumerate(texts):
     pos.insert(1, (im.size[1] - font.getsize(text)[1] *
                    len(texts) + i*2*font.getsize(text)[1]) / 2)
     pos = tuple(pos)
-    bw = 1
-    color = 'white'
+    bw = 4
+    color = 'yellow'
     draw.text(np.array(pos)-(-bw, -bw), text, color, font=font)
     draw.text(np.array(pos)-(-bw, +bw), text, color, font=font)
     draw.text(np.array(pos)-(+bw, -bw), text, color, font=font)
     draw.text(np.array(pos)-(+bw, +bw), text, color, font=font)
     draw.text(pos, text, (0, 0, 0), font=font)
 
+result = result.convert('RGB')
+result.save('./image_export/'+''.join(texts)+'.jpg', quality=70)
 
-result.save('pillow_iamge_draw_3.png', quality=95)
-
-result.show()
-
-# 画像の前にボックスを用意できたやつ
+# result.show()
