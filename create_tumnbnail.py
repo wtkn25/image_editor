@@ -33,9 +33,9 @@ icon_im_with_bg = Image.alpha_composite(icon_bg, icon_im_base_clear)
 base_im.paste(icon_im_with_bg, (45, 0))
 
 # テキストを描画
-font = ImageFont.truetype("/System/Library/Fonts/ヒラギノ角ゴシック W8.ttc", 100)
+font = ImageFont.truetype("/System/Library/Fonts/ヒラギノ角ゴシック W8.ttc", 80)
 
-base_im_draw.text((60, 350), title, spacing=40, font=font)
+base_im_draw.text((90, 400), title, spacing=40, font=font)
 
 # テキスト下のバーを表示
 bar_bellow_the_text = Image.new("RGBA", (1000, 25), BAR_COLOR[bar_color])
